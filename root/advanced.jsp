@@ -23,8 +23,8 @@
 %>
 <jsp:include page="/header.jsp"/>
 <SCRIPT>
-    var key = "<%= as.getEncryptKey() %>";
-    var debug = <%= as.isDebug() ? "true" : "false" %>;
+    const key = "<%= as.getEncryptKey() %>";
+    let debug =;
     loadfile('./js/jquery-1.6.4.min.js');
     window.setTimeout(loadOthers, 10);
     
@@ -41,7 +41,7 @@
 </SCRIPT>
     
 <h3>Search</h3>
-<font size="-1">
+<span style="font-size: smaller; ">
 <% if (as.isSearchRequest()){ %>
 <b>You searched for:</b> <%= as.getQueryString() %><br/><br/>
     <%= as.getResultsOutput() %>
@@ -57,8 +57,5 @@
 </table>
 </form>
 <%  } %>
-</font>
-<!-- Debug Output
-<%= (as.isDebug()) ? as.getDebugOutput() : "" %>
--->
+</span>
 <jsp:include page="/footer.jsp"/>

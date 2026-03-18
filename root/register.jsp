@@ -110,7 +110,7 @@ if (registered) {
 
 Please enter the following details to register with us: <br/><br/>
 <form method="POST">
-	<center>
+	<div style="text-align: center;">
 	<table>
 	<tr>
 		<td>Username (your email address):</td>
@@ -129,7 +129,7 @@ Please enter the following details to register with us: <br/><br/>
 		<td><input id="submit" type="submit" value="Register"></input></td>
 	</tr>
 	</table>
-	</center>
+	</div>
 </form>
 
 <jsp:include page="/footer.jsp"/>

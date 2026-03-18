@@ -23,7 +23,7 @@ public class SearchResult {
     public boolean checkIfValExists(String value){
         String[] targets = {this.product, this.desc, this.type, this.price};
         for(String target : targets){
-            if(target.toLowerCase().indexOf(value.toLowerCase()) > -1)
+            if(target.toLowerCase().contains(value.toLowerCase()))
                 return true;
         }
         return false; 
@@ -31,11 +31,10 @@ public class SearchResult {
     
     //Returns the appropriate JSON for a single entry.
     public String getJSON(){
-        String json = "{ \"product\": \"".concat(this.product).concat("\", \"desc\": \"") 
+        return "{ \"product\": \"".concat(this.product).concat("\", \"desc\": \"")
                             .concat(this.desc).concat("\", \"type\": \"")
-                            .concat(this.type).concat("\", \"price\": \"") 
+                            .concat(this.type).concat("\", \"price\": \"")
                             .concat(this.price).concat("\"}");
-        return json;
     }
     
     //Returns a TR to be used in the HTML output.

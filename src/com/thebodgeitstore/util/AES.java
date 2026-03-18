@@ -2,10 +2,8 @@ package com.thebodgeitstore.util;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -19,16 +17,17 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
    public class AES {
-       private static Charset PLAIN_TEXT_ENCODING = Charset.forName("UTF-8");
-       private static String CIPHER_TRANSFORMATION = "AES/CTR/NoPadding";
-       private static String KEY_TYPE = "AES";
-       private static int KEY_SIZE_BITS = 128;
-       
+       private static final Charset PLAIN_TEXT_ENCODING = StandardCharsets.UTF_8;
+       private static final String CIPHER_TRANSFORMATION = "AES/CTR/NoPadding";
+       private static final String KEY_TYPE = "AES";
+       private static final int KEY_SIZE_BITS = 128;
+
+       private SecureRandom random = new SecureRandom();
        private SecretKey key;
        private Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
        private byte[] ivBytes = new byte[KEY_SIZE_BITS/8];
      
-       public AES() throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException, InvalidParameterSpecException, InvalidKeyException, InvalidAlgorithmParameterException{
+       public AES() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidParameterSpecException, InvalidKeyException {
            KeyGenerator kgen = KeyGenerator.getInstance(KEY_TYPE);
            kgen.init(KEY_SIZE_BITS); 
            key = kgen.generateKey();
@@ -47,13 +46,13 @@ import javax.crypto.spec.SecretKeySpec;
        public void setCrtKey(String keyText) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException{
            byte[] bText = keyText.getBytes();
            SecretKey secretKey = new SecretKeySpec(bText, "AES");
-           Cipher c2 = Cipher.getInstance("AES/ECB/NoPadding");
+           Cipher c2 = Cipher.getInstance("AES/GCM/NoPadding");
            c2.init(Cipher.ENCRYPT_MODE, secretKey);
            bText = c2.doFinal(bText);
            key = new SecretKeySpec(bText, "AES");
        }
        
-       public void setStringToKey(String keyText) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+       public void setStringToKey(String keyText) {
            setKey(keyText.getBytes());
        }
        
@@ -93,16 +92,24 @@ import javax.crypto.spec.SecretKeySpec;
         public String encrypt(String message) throws InvalidKeyException,
                 IllegalBlockSizeException, BadPaddingException,
                 InvalidAlgorithmParameterException {
-            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivBytes));
+
+            byte[] randomBytes  = new byte[128];
+            random.nextBytes(randomBytes);
+            IvParameterSpec iv   = new IvParameterSpec(randomBytes);
+
+            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
             byte[] encrypted = cipher.doFinal(message.getBytes(PLAIN_TEXT_ENCODING));
-            String result = byteArrayToHexString(encrypted);
-            return result;
+            return byteArrayToHexString(encrypted);
         }
 
-        public String decryptCrt(String hexCipherText) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException{
+        public String decryptCrt(String hexCipherText) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+            byte[] randomBytes  = new byte[128];
+            random.nextBytes(randomBytes);
+            IvParameterSpec iv   = new IvParameterSpec(randomBytes);
+
             byte[] ciphertextBytes = hexStringToByteArray(hexCipherText);
             ivBytes = Arrays.copyOf(Arrays.copyOf(ciphertextBytes, 8), 16);
-            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivBytes));
+            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
             byte[] recoveredCleartext = cipher.doFinal(ciphertextBytes, 8, ciphertextBytes.length - 8);
             return new String(recoveredCleartext);
         }

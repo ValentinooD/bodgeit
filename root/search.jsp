@@ -5,7 +5,7 @@
 <jsp:include page="/header.jsp"/>
 
 <h3>Search</h3>
-<font size="-1">
+<span style="font-size: smaller; ">
 <%
 String query = (String) request.getParameter("q");
 
@@ -45,7 +45,7 @@ if (request.getMethod().equals("GET") && query != null){
                 if(count > 0){
 %>
 <TABLE border="1">
-<TR><TD>Product</TD><TD>Description</TD><TD>Type</TD><TD>Price</TD></TR>
+<TH><TD>Product</TD><TD>Description</TD><TD>Type</TD><TD>Price</TD></TH>
 <%= output %>
 </TABLE>                    
 <%              
@@ -77,5 +77,5 @@ if (request.getMethod().equals("GET") && query != null){
 <%  
 }
 %>
-</font>
+</span>
 <jsp:include page="/footer.jsp"/>

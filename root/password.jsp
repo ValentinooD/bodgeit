@@ -50,12 +50,12 @@ if (okresult != null) {
 %>
 Change your password: <br/><br/>
 <form method="POST">
-	<center>
+	<div style="text-align: center;">
 	<table>
-	<tr>
+	<td>
 		<td>Name</td>
 		<td><%=username%></td>
-	</tr>
+	</td>
 	<tr>
 		<td>New Password:</td>
 		<td><input id="password1" name="password1" type="password"/></td>
@@ -69,7 +69,7 @@ Change your password: <br/><br/>
 		<td><input id="submit" type="submit" value="Submit"/></td>
 	</tr>
 	</table>
-	</center>
+	</div>
 </form>
 
 <%

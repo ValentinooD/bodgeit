@@ -17,17 +17,17 @@ jQuery(function($) { $.extend({
         if (method == null) method = 'POST';
         if (data == null) data = {};
 
-        var form = $('<form>').attr({
+        const form = $('<form>').attr({
             method: method,
             action: url
          }).css({
             display: 'none'
          });
 
-        var addData = function(name, data) {
+        const addData = function(name, data) {
             if ($.isArray(data)) {
-                for (var i = 0; i < data.length; i++) {
-                    var value = data[i];
+                for (let i = 0; i < data.length; i++) {
+                    const value = data[i];
                     addData(name + '[]', value);
                 }
             } else if (typeof data === 'object') {
@@ -45,7 +45,7 @@ jQuery(function($) { $.extend({
             }
         };
 
-        for (var key in data) {
+        for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 addData(key, data[key]);
             }
@@ -65,7 +65,7 @@ $( document ).ready(function() {
 });
 
 function validateForm(form){
-    var val = prepareInput(form_to_params(form));
+    const val = prepareInput(form_to_params(form));
     if(val){
         $.form('./advanced.jsp' + ((debug) ? '?debug=true' : ''), { q: val }).submit();
     }   
@@ -73,9 +73,8 @@ function validateForm(form){
 }
 
 function prepareInput(strInput){
-    var params = strInput.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39');
-    val = ((params.length > 0)) ? Aes.Ctr.encrypt(params, key, 128) : false;
-    return (val) ? val : false;
+    const params = strInput.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll('\'', '&#39');
+    return ((params.length > 0)) ? Aes.Ctr.encrypt(params, key, 128) : false;
 }
 
 
@@ -83,16 +82,16 @@ $(document).ready(function() {
 
     $( "input[type='text']" ).autocomplete({
       source: function( request, response ) {
-        var target = this.element.attr('name');
-        $.ajax({
+          const target = this.element.attr('name');
+          $.ajax({
             dataType: "json",
             type : 'POST',
             data: 'q=' + prepareInput( target + ':' + request.term + '|ajax:true') + ((debug) ? '&debug=true' : ''),
             success: function(data) {
-              var auto = []; 
-              $('input.suggest-user').removeClass('ui-autocomplete-loading');  // hide loading image
+                const auto = [];
+                $('input.suggest-user').removeClass('ui-autocomplete-loading');  // hide loading image
               $.map( data, function(item) {
-                if(!($.inArray(item[target], auto) >= 0))
+                if($.inArray(item[target], auto) < 0)
                     auto.push(item[target]);
               });     
               return response(auto);

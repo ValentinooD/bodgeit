@@ -1,20 +1,21 @@
 
 function loadfile(filename){
- var filetype = filename.split('.').pop();
- switch (filetype){
+ const filetype = filename.split('.').pop();
+    let insert;
+    switch (filetype){
      case "js":
-         var insert=document.createElement('script')
+         insert=document.createElement('script')
          insert.setAttribute("type","text/javascript")
          insert.setAttribute("src", filename)
          break;
     case 'css':
-        var insert=document.createElement("link");
+        insert=document.createElement("link");
         insert.setAttribute("type", "text/css")
         insert.setAttribute("href", filename)
         insert.setAttribute("rel", "stylesheet")
         break;
  }
- if (typeof insert!="undefined")
+ if (insert !== undefined)
   document.getElementsByTagName("head")[0].appendChild(insert);
  return false;
 }
@@ -25,38 +26,47 @@ function loadfile(filename){
 
 function form_to_params( form )
 {
-    var output = "";
-    var length = form.elements.length
-    for( var i = 0; i < length; i++ )
-    {
+    let output = "";
+    const length = form.elements.length;
+    let element;
+
+    for (let i = 0; i < length; i++) {
         element = form.elements[i]
 
-        if(element.tagName == 'TEXTAREA' )
-        {
-                output += "|" + element.name + ":" + element.value; 
-        }
-        else if( element.tagName == 'INPUT' )
-        {
-           switch(element.type){
-                case 'radio':
-                case 'checkbox':
-                    if(element.checked && !element.value){
-                        output += "|" + element.name + ":on";
-                        break;
-                    }
-                case 'text':
-                case 'hidden':
-                case 'password':
-                    if(element.value)
-                        output += "|" + element.name + ":" + element.value;
-                break;     
-          }
+        if (element.tagName === 'TEXTAREA') {
+            output += "|" + element.name + ":" + element.value;
+        } else if (element.tagName === 'INPUT') {
+            output += appendOutputForInputTag(element);
         }
     }
     return output.substring(1);
 }
 
+function appendOutputForInputTag(element) {
+    let output = "";
+    switch(element.type){
+        case 'radio':
+        case 'checkbox':
+            if(element.checked && !element.value){
+                output = "|" + element.name + ":on";
+                break;
+            }
+            break;
+        case 'text':
+        case 'hidden':
+        case 'password':
+            if(element.value)
+                output = "|" + element.name + ":" + element.value;
+            break;
+    }
+    return output;
+}
+
 
 function htmlEntities(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
 }

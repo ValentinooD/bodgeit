@@ -100,7 +100,7 @@ if (request.getMethod().equals("POST") && username != null) {
 <h3>Login</h3>
 Please enter your credentials: <br/><br/>
 <form method="POST">
-	<center>
+	<div style="text-align: center;">
 	<table>
 	<tr>
 		<td>Username:</td>
@@ -115,7 +115,7 @@ Please enter your credentials: <br/><br/>
 		<td><input id="submit" type="submit" value="Login"/></td>
 	</tr>
 	</table>
-	</center>
+	</div>
 </form>
 If you dont have an account with us then please <a href="register.jsp">Register</a> now for a free account.
 <br/><br/>

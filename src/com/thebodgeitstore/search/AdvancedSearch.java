@@ -21,10 +21,10 @@ public class AdvancedSearch {
     private HttpServletRequest request = null;
     private HttpSession session = null;
     private Connection connection = null;
-    private Map<String,String> parameters = new LinkedHashMap<String,String>();
-    LinkedList<SearchResult> results = new LinkedList<SearchResult>();
+    private Map<String,String> parameters = new LinkedHashMap<>();
+    LinkedList<SearchResult> results = new LinkedList<>();
     private String encryptKey = null;
-    private LinkedList<String> debugOutput = new LinkedList<String>();
+    private LinkedList<String> debugOutput = new LinkedList<>();
     private String output = "";
     private static String jsonPrequal = "[";
     private static String htmlPrequal = "<TABLE border=\"1\">\n" + "<TR><TD>Product</TD><TD>Description</TD><TD>Type</TD><TD>Price</TD></TR>\n";
@@ -53,7 +53,7 @@ public class AdvancedSearch {
     //Returns whether its an Ajax request, or a normal request based on param "Ajax" in req.
     public boolean isAjax(){
         try {
-            return "true".equals(this.parameters.get("ajax").toLowerCase());
+            return "true".equalsIgnoreCase(this.parameters.get("ajax"));
         } catch (Exception e){
             return false;
         }
@@ -71,9 +71,7 @@ public class AdvancedSearch {
     
     //Returns true if its a search request, or false if just a regular page load
     public boolean isSearchRequest(){
-        if(this.parameters.size() > 1)
-            return true;
-        return false;
+        return this.parameters.size() > 1;
     }
     
     //Gets the Debug Output for outputting to the page
@@ -87,12 +85,12 @@ public class AdvancedSearch {
     
     //Gets the appropriate output depending on wheter it is an Ajax or normal request
     public String getResultsOutput(){
-        if(results.size() > 0)
+        if(!results.isEmpty())
             return this.output;
         else if (this.isAjax())
-            return this.jsonEmpty;
+            return jsonEmpty;
         else
-            return this.htmlEmpty;
+            return htmlEmpty;
     }
     
     //Gets the query string used for "You searched for:
@@ -114,7 +112,9 @@ public class AdvancedSearch {
             //Cycle Through all Parameters and look for the XSS Payload, and if so score it
             for (Map.Entry<String, String> entry : parameters.entrySet()){
                 if(entry.getValue().replaceAll("\\s", "").toLowerCase().indexOf("<script>alert(\"h@ckeda3s\")</script>") > -1){
-                    this.connection.createStatement().execute("UPDATE Score SET status = 1 WHERE task = 'AES_XSS'");
+                    try (Statement statement = this.connection.createStatement()) {
+                        statement.execute("UPDATE Score SET status = 1 WHERE task = 'AES_XSS'");
+                    }
                 }
             }
 
@@ -122,12 +122,17 @@ public class AdvancedSearch {
             //that however its taked into the results it can be scored
             String tableName = "f0ecfb32e56d3845f140e5c81a81363ce61d9d50";
             for(SearchResult result : this.results){
-                if(result.checkIfValExists(tableName))
-                        this.connection.createStatement().execute("UPDATE Score SET status = 1 WHERE task = 'AES_SQLI'");    
+                if(result.checkIfValExists(tableName)) {
+                    try (Statement statement = this.connection.createStatement()) {
+                        statement.execute("UPDATE Score SET status = 1 WHERE task = 'AES_SQLI'");
+                    }
+                }
             }
             
             if(this.isDebug()){
-                this.connection.createStatement().execute("UPDATE Score SET status = 1 WHERE task = 'HIDDEN_DEBUG'");
+                try (Statement statement = this.connection.createStatement()) {
+                    statement.execute("UPDATE Score SET status = 1 WHERE task = 'HIDDEN_DEBUG'");
+                }
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -144,7 +149,7 @@ public class AdvancedSearch {
             if (this.request.getMethod().equals("POST")){
                 AES enc = new AES();
                 enc.setCrtKey(this.encryptKey);
-                String eQuery = (String) this.request.getParameter("q");
+                String eQuery = this.request.getParameter("q");
                 queryString = enc.decryptCrt(eQuery);
                 queryString = queryString.replaceAll("[^\\p{ASCII}]", "");
                 for(String param : queryString.split("\\|")){
@@ -165,8 +170,7 @@ public class AdvancedSearch {
     //them into this.results. Also sets the appropriate output in this.output
     //depending on whether its an HTML or Ajax (e.g. JSON Request).
     private void setResults(){
-        try {
-            Statement stmt = this.connection.createStatement();
+        try (Statement stmt = this.connection.createStatement()) {
             ResultSet rs = null;
            
             String sql = "SELECT PRODUCT, DESC, TYPE, TYPEID, PRICE " +
@@ -177,15 +181,15 @@ public class AdvancedSearch {
                          "AND TYPE LIKE '%{TYPE}%'";
             this.debugOutput.add("SQL Statement Before:".concat(sql));
 
-            for(String key : this.parameters.keySet()){
-                String find = "\\{".concat(key.toUpperCase()).concat("\\}");
-                sql = sql.replaceAll(find, this.parameters.get(key));
+            for(Map.Entry<String, String> es : this.parameters.entrySet()){
+                String find = "\\{".concat(es.getKey().toUpperCase()).concat("\\}");
+                sql = sql.replaceAll(find, es.getValue());
             }
             sql = sql.replaceAll("%\\{[^\\}]+\\}", "");
             this.debugOutput.add("SQL Statement After:".concat(sql));
             rs = stmt.executeQuery(sql);
             
-            this.output = (this.isAjax()) ? this.jsonPrequal : this.htmlPrequal;
+            this.output = (this.isAjax()) ? jsonPrequal : htmlPrequal;
             
             while(rs.next()){
                 SearchResult result = new SearchResult();
@@ -198,8 +202,8 @@ public class AdvancedSearch {
                 this.output = this.output.concat(this.isAjax() ? result.getJSON().concat(", ") : result.getTrHTML());
             }
             //The negative 2 removes the extra space and , from making valid JSON
-            this.output = (this.isAjax()) ? this.output.substring(0, this.output.length() - 2).concat(this.jsonPostqual) 
-                                          : this.output.concat(this.htmlPostqual);
+            this.output = (this.isAjax()) ? this.output.substring(0, this.output.length() - 2).concat(jsonPostqual)
+                                          : this.output.concat(htmlPostqual);
             
         } catch (Exception e){
             StringWriter sw = new StringWriter();

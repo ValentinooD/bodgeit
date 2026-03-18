@@ -27,9 +27,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class FunctionalZAP extends FunctionalTest {
 
+	@Override
 	public void setUp() throws Exception {
 		String target = System.getProperty("zap.targetApp");
-		if (target != null && target.length() > 0) {
+		if (target != null && !target.isEmpty()) {
 			// Theres an override
 			setSite(target);
 		}

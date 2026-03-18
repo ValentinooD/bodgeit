@@ -19,26 +19,26 @@
  */
 package com.thebodgeitstore.selenium.tests;
 
+import junit.framework.TestCase;
 import org.apache.commons.lang.RandomStringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.thoughtworks.selenium.SeleneseTestCase;
-
 /*
  * Note that this is an example of how to use ZAP with Selenium tests,
  * not a good example of how to write good Selenium tests!
  */
-public class FunctionalTest extends SeleneseTestCase {
+public class FunctionalTest extends TestCase {
 
 	private WebDriver driver;
 	private String site = "http://localhost:8080/bodgeit/";
-	
+
+	@Override
 	public void setUp() throws Exception {
 		String target = System.getProperty("zap.targetApp");
-		if (target != null && target.length() > 0) {
+		if (target != null && !target.isEmpty()) {
 			// Theres an override
 			site = target;
 		}
@@ -51,6 +51,7 @@ public class FunctionalTest extends SeleneseTestCase {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			// Ignore
+			Thread.currentThread().interrupt();
 		}
 		
 	}
@@ -132,18 +133,18 @@ public class FunctionalTest extends SeleneseTestCase {
 		// Create random username so we can rerun test
 		String randomUser = RandomStringUtils.randomAlphabetic(10) + "@test.com";
 		this.registerUser(randomUser, "password");
-		assertTrue(driver.getPageSource().indexOf("You have successfully registered with The BodgeIt Store.") > 0);
+		assertTrue(driver.getPageSource().contains("You have successfully registered with The BodgeIt Store."));
 	}
 	
 	public void tstRegisterAndLoginUser() {
 		// Create random username so we can rerun test
 		String randomUser = RandomStringUtils.randomAlphabetic(10) + "@test.com";
 		this.registerUser(randomUser, "password");
-		assertTrue(driver.getPageSource().indexOf("You have successfully registered with The BodgeIt Store.") > 0);
+		assertTrue(driver.getPageSource().contains("You have successfully registered with The BodgeIt Store."));
 		checkMenu("Logout", "logout.jsp");
 		
 		this.loginUser(randomUser, "password");
-		assertTrue(driver.getPageSource().indexOf("You have logged in successfully:") > 0);
+		assertTrue(driver.getPageSource().contains("You have logged in successfully:"));
 	}
 	
 	public void tstAddProductsToBasket() {
@@ -174,8 +175,6 @@ public class FunctionalTest extends SeleneseTestCase {
 		sleep();
 		
 		// TODO check the results!
-		//driver.findElement(By.name("q")).sendKeys("doo");
-		
 	}
 
 	public void testAll() {
@@ -187,6 +186,7 @@ public class FunctionalTest extends SeleneseTestCase {
 		
 	}
 
+	@Override
 	public void tearDown() throws Exception {
 		driver.close();
 	}

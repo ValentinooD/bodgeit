@@ -3,7 +3,7 @@
 <%@ page import="java.servlet.http.*" %>
 <%@ page import="java.sql.*" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<html>
+<html lang="en">
 <head>
 <title>The BodgeIt Store</title>
 <link href="style.css" rel="stylesheet" type="text/css" />
@@ -14,16 +14,16 @@
 	String username = (String) session.getAttribute("username");
 	String usertype = (String) session.getAttribute("usertype");
 %>
-<center>
-<table width="80%" class="border">
-<tr BGCOLOR=#C3D9FF>
-<td align="center" colspan="6">
+<div style="text-align: center;">
+<table style="width: 80%" class="border">
+<tr style="background-color: #C3D9FF">
+<td style="text-align: center" colspan="6">
 <H1>The BodgeIt Store</H1>
-<table width="100%" class=\"noborder\">
-<tr BGCOLOR=#C3D9FF>
-<td align="center" width="30%">&nbsp;</td>
-<td align="center" width="40%">We bodge it, so you dont have to!</td>
-<td align="center" width="30%" style="text-align: right" >
+<table style="width: 100%" class="noborder">
+<tr style="background-color: #C3D9FF">
+<td style="text-align: center; width: 30%">&nbsp;</td>
+<td style="text-align: center; width: 40%">We bodge it, so you dont have to!</td>
+<td style="text-align: center; width: 30%" style="text-align: right" >
 <%
 	if (username != null) {
 		out.println("User: <a href=\"password.jsp\">" + username + "</a>");
@@ -36,22 +36,21 @@
 </td>
 </tr>
 <tr>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="home.jsp">Home</a></td>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="about.jsp">About Us</a></td>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="home.jsp">Home</a></td>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="about.jsp">About Us</a></td>
 <%
 	if (usertype != null && usertype.equals("ADMIN")) {
 %>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="contact.jsp">Comments</a></td>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="admin.jsp">Admin</a></td>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="contact.jsp">Comments</a></td>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="admin.jsp">Admin</a></td>
 <%
 	} else {
 %>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="contact.jsp">Contact Us</a></td>
-<!-- td align="center" width="16%"><a href="admin.jsp">Admin</a></td-->
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="contact.jsp">Contact Us</a></td>
 <%
 	}
 %>
-<td align="center" width="16%" BGCOLOR=#EEEEEE>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center">
 <%
 	if (usertype == null) {
 %>
@@ -67,17 +66,17 @@
 <%
 	if (usertype == null || ! usertype.equals("ADMIN")) {
 %>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="basket.jsp">Your Basket</a></td>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="basket.jsp">Your Basket</a></td>
 <%
 	}
 %>
-<td align="center" width="16%" BGCOLOR=#EEEEEE><a href="search.jsp">Search</a></td>
+<td style="background-color: #EEEEEE; width: 16%; text-align: center"><a href="search.jsp">Search</a></td>
 </tr>
 <tr>
-<td align="center" colspan="6">
-<table width="100%" class="border">
+<td colspan="6" style="text-align: center">
+<table style="width: 100%" class="border">
 <tr>
-<td align="left" valign="top" width="25%">
+<td style="width: 25%; text-align: left; vertical-align: top">
 <%
 	Connection c = null;
 	PreparedStatement stmt = null;
@@ -108,4 +107,4 @@
 %>
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 </td>
-<td valign="top" width="70%">
+<td style="vertical-align: top; width: 70%">
