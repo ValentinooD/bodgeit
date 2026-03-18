@@ -42,7 +42,7 @@ public class FunctionalTest extends TestCase {
 			// Theres an override
 			site = target;
 		}
-		
+
 		this.setDriver(new FirefoxDriver());
 	}
 	
